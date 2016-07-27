@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Stock Exchange Forecasting</title>
+  <meta charset="utf-8">
+  <meta name="description" content="Stock Exchange Forecasting">
+  <meta name="author" content="Omar Marquina">
+  <meta name="generator" content="slidify" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/default.css" media="all" >
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/phone.css" 
+    media="only screen and (max-device-width: 480px)" >
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/slidify.css" >
+  <link rel="stylesheet" href="libraries/highlighters/highlight.js/css/tomorrow.css" />
+  <base target="_blank"> <!-- This amazingness opens all links in a new tab. -->  <link rel=stylesheet href="./assets/css/ribbons.css"></link>
+
+  
+  <!-- Grab CDN jQuery, fall back to local if offline -->
+  <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.min.js"></script>
+  <script>window.jQuery || document.write('<script src="libraries/widgets/quiz/js/jquery.js"><\/script>')</script> 
+  <script data-main="libraries/frameworks/io2012/js/slides" 
+    src="libraries/frameworks/io2012/js/require-1.0.8.min.js">
+  </script>
+  
+  
+
+</head>
+<body style="opacity: 0">
+  <slides class="layout-widescreen">
+    
+    <!-- LOGO SLIDE -->
+        <slide class="title-slide segue nobackground">
+  <hgroup class="auto-fadein">
+    <h1>Stock Exchange Forecasting</h1>
+    <h2>Weekly forecast model application</h2>
+    <p>Omar Marquina<br/>Data Scientist</p>
+  </hgroup>
+  <article></article>  
+</slide>
+    
+
+    <!-- SLIDES -->
+    <slide class="" id="slide-1" style="background:;">
+  <hgroup>
+    <h2>Overview</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>This application builds a forcast model and predicts 3 weeks ahead of closing stock prices.</p>
+
+<p>Data is collected from Google on-line data base and US Stock Exchange symbols are used.
+N number of past months to build the model can be selected.</p>
+
+<p>Results in forecasting plot, model summary, accuracy and forcasted values for the next 3 weeks.</p>
+
+<p>To have acces to live application go to:</p>
+
+<p><a href="http://omarm33.shinyapps.io/Assignment/">http://omarm33.shinyapps.io/Assignment/</a></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Application Screen Shot</h2>
+  </hgroup>
+  <article data-timings="">
+    <p><img src="assets/img/app.png" alt="Application Screen Shot"></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-3" style="background:;">
+  <hgroup>
+    <h2>Fcasting Class</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>The application creates a class <strong>Fcasting</strong> to collect all information regarding source data, the fit model and the forcasting.</p>
+
+<p>A <strong>plot</strong> method is added to manage Fcasting class&#39; plotting.</p>
+
+<pre><code class="r">setClass(&quot;Fcasting&quot;, representation (
+  symbol    = &quot;character&quot;, 
+  forecast  = &quot;forecast&quot;,
+  from.date = &quot;Date&quot;,
+  to.date   = &quot;Date&quot;,
+  valid     = &quot;logical&quot;))
+setMethod(&quot;plot&quot;,&quot;Fcasting&quot;, function(x, ...){
+  plot(x@forecast, xlab=&quot;Weeks&quot;, ylab=paste(x@symbol,
+  &quot; Price ($)&quot;), main = &quot;3 Weeks Forecast&quot;)
+})
+fcast &lt;&lt;- new(&quot;Fcasting&quot;)
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-4" style="background:;">
+  <hgroup>
+    <h2>Data Collect and Model Fitting</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>Symbol data is collected from Google on-line database and translated into time series with 7 days periods.</p>
+
+<p>Fit model uses multiplicatives error, trend and season types (<strong>MMM</strong>). The forcast is for 21 days (3 weeks) after yesterday closing prices.</p>
+
+<pre><code class="r">stock.values &lt;- getSymbols(symbol, 
+  src  =&quot;google&quot;, 
+  from = fcast@from.date, 
+  to   = fcast@to.date, auto.assign = FALSE)
+
+ts1     &lt;- ts(Cl(stock.values), frequency = 7)
+ets.all &lt;- ets(ts1, model = &quot;MMM&quot;)
+fcast@forecast &lt;&lt;- forecast(ets.all, h=21)
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-5" style="background:;">
+  <hgroup>
+    <h2>Fcasting Results</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>The application results is the plot of the model data and the summary of the forecasting, including accurracy and 21 days of the forecast values.</p>
+
+<pre><code class="r">plot(fcast)
+</code></pre>
+
+<p><img src="assets/fig/plotting-1.png" alt="plot of chunk plotting"></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+    <slide class="backdrop"></slide>
+  </slides>
+  <div class="pagination pagination-small" id='io2012-ptoc' style="display:none;">
+    <ul>
+      <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=1 title='Overview'>
+         1
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=2 title='Application Screen Shot'>
+         2
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=3 title='Fcasting Class'>
+         3
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=4 title='Data Collect and Model Fitting'>
+         4
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=5 title='Fcasting Results'>
+         5
+      </a>
+    </li>
+  </ul>
+  </div>  <!--[if IE]>
+    <script 
+      src="http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js">  
+    </script>
+    <script>CFInstall.check({mode: 'overlay'});</script>
+  <![endif]-->
+</body>
+  <!-- Load Javascripts for Widgets -->
+  
+  <!-- LOAD HIGHLIGHTER JS FILES -->
+  <script src="libraries/highlighters/highlight.js/highlight.pack.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
+  <!-- DONE LOADING HIGHLIGHTER JS FILES -->
+   
+  </html>
